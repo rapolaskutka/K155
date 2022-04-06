@@ -1,42 +1,43 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import NotFound from './NotFound';
 
 const Exhibit = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
+  const [notFound, setNotFound] = useState(false);
+  const params = useParams();
   useEffect(() => {
-    const params = useParams();
+    console.log('hii');
     fetch('/api/v1/page/' + params.exhibitId)
       .then((response) => {
         if (!response.ok) {
-          throw new Error(`This is an HTTP error: The status is ${response.status}`);
+          setNotFound(true);
         }
         return response.json();
       })
       .then((actualData) => {
-        setData(actualData);
-        setError(null);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setData(null);
-      })
-      .finally(() => {
+        setData({
+          code: actualData.code,
+          disc: actualData.disc,
+          imageName: actualData.image_name
+        });
+        console.log(actualData);
         setLoading(false);
       });
   }, []);
-  console.log(data);
-  console.log(error);
-  console.log(loading);
+  if (notFound) return <NotFound />;
   return (
     <div>
-      {loading && <div>A moment please...</div>}
-      {error && <div>{`There is a problem fetching the post data - ${error}`}</div>}
-      <p>{data.image_name}</p>
-      <p>{data.disc}</p>
+      {loading ? (
+        <div>A moment please...</div>
+      ) : (
+        <>
+          <div>Image name: {data.imageName}</div>
+          <div>Discription: {data.disc}</div>
+        </>
+      )}
     </div>
   );
 };
