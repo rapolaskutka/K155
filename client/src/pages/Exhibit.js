@@ -9,7 +9,6 @@ const Exhibit = () => {
   const [notFound, setNotFound] = useState(false);
   const params = useParams();
   useEffect(() => {
-    console.log('hii');
     fetch('/api/v1/page/' + params.exhibitId)
       .then((response) => {
         if (!response.ok) {
